@@ -1,9 +1,18 @@
 package com.filimonov.recipe.website_1.model;
 
 public class Ingredient {
+    private int id;
     private String name;
     private int weight;
     private String measureUnit;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

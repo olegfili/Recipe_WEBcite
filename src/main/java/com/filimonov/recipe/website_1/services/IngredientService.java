@@ -10,9 +10,10 @@ import java.util.Map;
 @Service
 public class IngredientService {
     private final Map<Integer, Ingredient> ingredientMap = new HashMap<>();
-    private static int idCounter = 0;
+    private static int idCounter = 1;
 
     public Ingredient addIngredient (Ingredient newIngredient){
+        newIngredient.setId(idCounter);
         ingredientMap.put(idCounter++, newIngredient);
         return newIngredient;
     }
@@ -26,7 +27,12 @@ public class IngredientService {
     }
 
     public Ingredient editIngredient(int id, Ingredient ingredient) {
-        return ingredientMap.replace(id, ingredient);
+        if (ingredientMap.containsKey(id)) {
+            ingredient.setId(id);
+            ingredientMap.put(id, ingredient);
+            return ingredient;
+        }
+        return null;
     }
 
     public Ingredient deleteIngredient(int id) {

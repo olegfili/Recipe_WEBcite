@@ -9,9 +9,10 @@ import java.util.*;
 @Service
 public class RecipeService {
     private final Map<Integer, Recipe> recipeMap = new HashMap<>();
-    private static int idCounter = 0;
+    private static int idCounter = 1;
 
     public Recipe addRecipe(Recipe newRecipe) {
+        newRecipe.setId(idCounter);
         recipeMap.put(idCounter++, newRecipe);
         return newRecipe;
     }
@@ -25,18 +26,23 @@ public class RecipeService {
     }
 
     public Recipe editRecipe(int id, Recipe recipe) {
-        return recipeMap.replace(id, recipe);
+        if (recipeMap.containsKey(id)) {
+            recipe.setId(id);
+            recipeMap.put(id, recipe);
+            return recipe;
+        }
+        return null;
     }
 
     public Recipe deleteRecipe(int id) {
         return recipeMap.remove(id);
     }
 
-    public Collection<Recipe> searchByIngredient(String name) {
+    public Collection<Recipe> searchByIngredient(int ingredientId) {
         List<Recipe> foundRecipes = new ArrayList<>();
         for (Recipe recipe : recipeMap.values()){
             for (Ingredient ingredient : recipe.getIngredients()){
-                if (ingredient.getName().equalsIgnoreCase(name) ){
+                if (ingredient.getId() == ingredientId) {
                     foundRecipes.add(recipe);
                     break;
                 }
@@ -47,12 +53,18 @@ public class RecipeService {
 
     public Collection<Recipe> searchByIngredients(List<String> names) {
         List<Recipe> result = new ArrayList<>();
+        List<String> searchNames = new ArrayList<>();
+        for (String s : names) {
+            searchNames.add(s.toLowerCase());
+        }
+
         for (Recipe recipe : recipeMap.values()) {
             List<String> recipeIngredientNames = new ArrayList<>();
             for (Ingredient ing : recipe.getIngredients()) {
-                recipeIngredientNames.add(ing.getName());
+                recipeIngredientNames.add(ing.getName().toLowerCase());
             }
-            if (recipeIngredientNames.containsAll(names)) {
+
+            if (recipeIngredientNames.containsAll(searchNames)) {
                 result.add(recipe);
             }
         }

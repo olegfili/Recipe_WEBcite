@@ -2,7 +2,9 @@ package com.filimonov.recipe.website_1.controllers;
 
 import com.filimonov.recipe.website_1.model.Ingredient;
 import com.filimonov.recipe.website_1.services.IngredientService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 
@@ -24,7 +26,11 @@ public class IngredientController {
 
     @GetMapping("/{id}")
     public Ingredient getIngredient (@PathVariable int id) {
-        return ingredientService.getIngredient(id);
+        Ingredient ingredient = ingredientService.getIngredient(id);
+        if (ingredient == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ингредиент не найден");
+        }
+        return ingredient;
     }
 
     @GetMapping
@@ -34,12 +40,20 @@ public class IngredientController {
 
     @PutMapping("/{id}")
     public Ingredient editIngredient(@PathVariable int id, @RequestBody Ingredient ingredient) {
-        return ingredientService.editIngredient(id, ingredient);
+        Ingredient updated = ingredientService.editIngredient(id, ingredient);
+        if (updated == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ингредиент не найден для редактирования");
+        }
+        return updated;
     }
 
     @DeleteMapping("/{id}")
     public Ingredient deleteIngredient(@PathVariable int id) {
-        return ingredientService.deleteIngredient(id);
+        Ingredient deleted = ingredientService.deleteIngredient(id);
+        if (deleted == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ингредиент не найден для удаления");
+        }
+        return deleted;
     }
 
 }

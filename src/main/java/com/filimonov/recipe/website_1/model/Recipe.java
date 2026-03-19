@@ -4,9 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Recipe {
+    private int id;
     private String name;
     private int timeToCook;
     private List<Ingredient> ingredients = new ArrayList<>();
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

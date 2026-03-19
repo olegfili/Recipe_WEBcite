@@ -2,7 +2,9 @@ package com.filimonov.recipe.website_1.controllers;
 
 import com.filimonov.recipe.website_1.model.Recipe;
 import com.filimonov.recipe.website_1.services.RecipeService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,27 +26,43 @@ public class RecipeController {
 
     @GetMapping("/{id}")
     public Recipe getRecipe(@PathVariable int id) {
-        return recipeService.getRecipe(id);
+        Recipe recipe = recipeService.getRecipe(id);
+        if (recipe == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Рецепт не найден");
+        }
+        return recipe;
     }
 
     @GetMapping
-    public Collection<Recipe> getAllRecipes() {
+    public Collection<Recipe> getRecipes (@RequestParam(required = false) Integer page){
+        if (page != null) {
+            return recipeService.getRecipesByPage(page);
+        }
         return recipeService.getAllRecipes();
     }
 
     @PutMapping("/{id}")
-    public Recipe editRecipe(@PathVariable int id, @RequestBody Recipe recipe) {
-        return recipeService.editRecipe(id, recipe);
+    public Recipe editRecipe ( @PathVariable int id, @RequestBody Recipe recipe) {
+        Recipe updated = recipeService.editRecipe(id, recipe);
+        if (updated == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Рецепт не найден для редактирования");
+        }
+        return updated;
     }
+
 
     @DeleteMapping("/{id}")
     public Recipe deleteRecipe(@PathVariable int id) {
-        return recipeService.deleteRecipe(id);
+        Recipe deleted = recipeService.deleteRecipe(id);
+        if (deleted == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Рецепт не найден для удаления");
+        }
+        return deleted;
     }
 
     @GetMapping("/search")
-    public Collection<Recipe> searchByIngredient(@RequestParam String name) {
-        return recipeService.searchByIngredient(name);
+    public Collection<Recipe> searchByIngredient(@RequestParam int ingredientId) {
+        return recipeService.searchByIngredient(ingredientId);
     }
 
     @GetMapping("/searchByIngredients")
@@ -52,8 +70,4 @@ public class RecipeController {
         return recipeService.searchByIngredients(names);
     }
 
-    @GetMapping("/page")
-    public List<Recipe> getRecipesByPage(@RequestParam(defaultValue = "1") int page) {
-        return recipeService.getRecipesByPage(page);
-    }
 }
